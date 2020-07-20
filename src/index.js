@@ -30,10 +30,14 @@ const components = {
             mode: 'javascript',
             theme: 'cobalt'
         })
+
         editor.on('change', () => {
+            testCode()
+        })
+
+        let testCode = () => {
             chai.should()
             let code = editor.getValue()
-            let test = new Function('expect', 'console', `${code}\n${testScript}`)
             let log = []
             let console = {
                 log: (vars) => {
@@ -41,12 +45,15 @@ const components = {
                 }
             }
             try {
+                let test = new Function('expect', 'console', `${code}\n${testScript}`)
                 test(chai.expect, console)
                 codeExerciseTestOutput.innerText = "Great Job!"
             } catch(err){
                 codeExerciseTestOutput.innerText = err.message
             }
-        })
+        }
+
+        setTimeout(testCode, 1000)
     }
 }
 
