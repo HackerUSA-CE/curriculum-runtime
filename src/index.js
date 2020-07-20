@@ -3,6 +3,9 @@ import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/cobalt.css'
 
+let chaiScript = document.createElement('script')
+chaiScript.src= "https://unpkg.com/chai/chai.js"
+document.head.append(chaiScript)
 
 const components = {
     'multiple-choice': (questionDiv) => {
@@ -18,12 +21,32 @@ const components = {
             })
         }
     },
-    'code-exercise': (codeExerciseTextArea) => {
+    'code-exercise': (codeExerciseDiv) => {
+        let codeExerciseTextArea = codeExerciseDiv.querySelector('[data-textarea]')
+        let codeExerciseTestOutput = codeExerciseDiv.querySelector('[data-test-output]') 
+        let {testScript} = getMetadata(codeExerciseDiv)
         let editor = CodeMirror.fromTextArea(codeExerciseTextArea, {
             lineNumbers: true,
-            mode: 'javascript'
+            mode: 'javascript',
+            theme: 'cobalt'
         })
-        
+        editor.on('change', () => {
+            chai.should()
+            let code = editor.getValue()
+            let test = new Function('expect', 'console', `${code}\n${testScript}`)
+            let log = []
+            let console = {
+                log: (vars) => {
+                    log.push(...vars)
+                }
+            }
+            try {
+                test(chai.expect, console)
+                codeExerciseTestOutput.innerText = "Great Job!"
+            } catch(err){
+                codeExerciseTestOutput.innerText = err.message
+            }
+        })
     }
 }
 
