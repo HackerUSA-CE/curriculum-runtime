@@ -1,5 +1,7 @@
 import CodeMirror from 'codemirror'
+import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/bespin.css'
+
 
 const components = {
     'multiple-choice': (questionDiv) => {
