@@ -18,7 +18,7 @@ const components = {
 const getMetadata = (element) => {
     const { metadataIndex } = element.dataset
     if(metadataIndex === undefined) return {}
-    else return window.metadata[metadataIndex]
+    else return metadata[metadataIndex]
 }
 
 const register = () => {
