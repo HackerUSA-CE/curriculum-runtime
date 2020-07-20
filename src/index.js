@@ -1,6 +1,7 @@
-import CodeMirror from 'codemirror'
+import CodeMirror from 'codemirror/lib/codemirror.js'
+import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/bespin.css'
+import 'codemirror/theme/cobalt.css'
 
 
 const components = {
@@ -19,7 +20,8 @@ const components = {
     },
     'code-exercise': (codeExerciseTextArea) => {
         let editor = CodeMirror.fromTextArea(codeExerciseTextArea, {
-            lineNumbers: true
+            lineNumbers: true,
+            mode: 'javascript'
         })
     }
 }
