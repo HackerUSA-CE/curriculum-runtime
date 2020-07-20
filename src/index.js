@@ -23,6 +23,7 @@ const components = {
             lineNumbers: true,
             mode: 'javascript'
         })
+        
     }
 }
 
