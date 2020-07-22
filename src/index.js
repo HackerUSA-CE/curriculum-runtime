@@ -13,9 +13,11 @@ const components = {
         let answerButtons = questionDiv.querySelectorAll(`[data-answer-for="${questionId}"]`)
         let feedbackDiv = questionDiv.querySelector(`[data-feedback-for="${questionId}"]`)
         for(let answerButton of answerButtons){
+            let radio = answerButton.querySelector('input')
             let { correct, feedback } = getMetadata(answerButton)
             answerButton.addEventListener('click', () => {
-                for(let answerButton of answerButtons) answerButton.disabled = true
+                for(let answerButton of answerButtons) answerButton.querySelector('input').checked = false
+                radio.checked = true;
                 feedbackDiv.innerText = `${correct ? "Correct!" : "Incorrect"}
                 ${feedback || ''}`
             })
