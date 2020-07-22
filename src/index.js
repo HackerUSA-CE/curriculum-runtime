@@ -18,6 +18,7 @@ const components = {
             answerButton.addEventListener('click', () => {
                 for(let answerButton of answerButtons) answerButton.querySelector('input').checked = false
                 radio.checked = true;
+                feedbackDiv.style.color = correct ? 'green' : 'red'
                 feedbackDiv.innerText = `${correct ? "Correct!" : "Incorrect"}
                 ${feedback || ''}`
             })
