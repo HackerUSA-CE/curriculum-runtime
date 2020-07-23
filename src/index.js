@@ -41,7 +41,7 @@ const components = {
         let tests = {
             javascript: (code, babelConfig = { filename: 'test.js', presets: [ 'env' ] }) => {
                 let log = []
-                let console = {
+                let mockConsole = {
                     log: (vars) => {
                         log.push(...vars)
                     }
@@ -52,7 +52,7 @@ const components = {
                     completeScript = Babel.transform(completeScript, babelConfig).code
 console.log(completeScript)
                     let test = new Function('expect', 'console', 'code', completeScript)
-                    test(chai.expect, console, code)
+                    test(chai.expect, mockConsole, code)
                     codeExerciseTestOutput.style.color = 'green'
                     codeExerciseTestOutput.innerText = "Great Job!"
                 } catch(err){
