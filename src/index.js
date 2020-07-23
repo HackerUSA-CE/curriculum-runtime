@@ -1,7 +1,7 @@
 import CodeMirror from 'codemirror/lib/codemirror.js'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/cobalt.css'
+import 'codemirror/theme/material-darker.css'
 
 let chaiScript = document.createElement('script')
 chaiScript.src= "https://unpkg.com/chai/chai.js"
@@ -31,7 +31,7 @@ const components = {
         let editor = CodeMirror.fromTextArea(codeExerciseTextArea, {
             lineNumbers: true,
             mode: 'javascript',
-            theme: 'cobalt'
+            theme: 'material-darker'
         })
 
         editor.on('change', () => {
