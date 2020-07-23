@@ -14,6 +14,10 @@ let babelScript = document.createElement('script')
 babelScript.src= "https://unpkg.com/@babel/standalone/babel.min.js"
 document.head.append(babelScript)
 
+let tsScript = document.createElement('script')
+tsScript.src= "https://unpkg.com/typescript@3.9.7/lib/typescript.js"
+document.head.append(tsScript)
+
 const components = {
     'multiple-choice': (questionDiv) => {
         let { questionId } = questionDiv.dataset
@@ -81,10 +85,7 @@ console.log(completeScript)
                 })
             },
             typescript: (code) => {
-                 tests.javascript(code, {
-                    filename: 'test.ts',
-                    presets: ["typescript"]
-                })
+                 tests.javascript(ts.transpile(code))
             }
         }
 
