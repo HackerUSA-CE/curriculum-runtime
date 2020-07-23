@@ -39,7 +39,7 @@ const components = {
             'typescript': 'text/typescript'
         }
         let tests = {
-            javascript: (code, babelConfig = null) => {
+            javascript: (code, babelConfig = { presets: [ 'env' ] }) => {
                 let log = []
                 let console = {
                     log: (vars) => {
@@ -48,14 +48,15 @@ const components = {
                 }
                 try {
                     let completeScript = `${setupScript}\n${code}\n${testScript}`
-                    if(babelConfig) completeScript = Babel.transform(completeScript, babelConfig).code
-                    console.log(completeScript)
+                    
+                    completeScript = Babel.transform(completeScript, babelConfig).code
+
                     let test = new Function('expect', 'console', 'code', completeScript)
                     test(chai.expect, console, code)
-                    codeExerciseTestOutput.color = 'green'
+                    codeExerciseTestOutput.style.color = 'green'
                     codeExerciseTestOutput.innerText = "Great Job!"
                 } catch(err){
-                    codeExerciseTestOutput.color = 'red'
+                    codeExerciseTestOutput.style.color = 'red'
                     codeExerciseTestOutput.innerText = err.message
                 }
             },
@@ -85,7 +86,7 @@ const components = {
         }
 
         if(language === 'jsx') setupScript = `${reactScript}\n${setupScript}`
-        
+
         let codeExerciseTextArea = codeExerciseDiv.querySelector('[data-textarea]')
         let codeExerciseTestOutput = codeExerciseDiv.querySelector('[data-test-output]') 
         let { setupScript, testScript, language } = getMetadata(codeExerciseDiv)
