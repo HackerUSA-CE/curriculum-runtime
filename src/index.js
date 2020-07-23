@@ -5,6 +5,9 @@ import 'codemirror/mode/jsx/jsx.js'
 
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/base16-light.css'
+import { createProject, ts } from "@ts-morph/bootstrap";
+
+
 
 let chaiScript = document.createElement('script')
 chaiScript.src= "https://unpkg.com/chai/chai.js"
@@ -84,8 +87,15 @@ console.log(completeScript)
                     }]]
                 })
             },
-            typescript: (code) => {
-                 tests.javascript(ts.transpile(code))
+            typescript: async (code) => {
+                const project = await createProject({ useInMemoryFileSystem: true });
+                project.createSourceFile(code);
+
+                // const program = project.createProgram();
+                const diagnostics = ts.getPreEmitDiagnostics(project.createProgram());
+
+                console.log(project.formatDiagnosticsWithColorAndContext(diagnostics));
+                tests.javascript(ts.transpile(code))
             }
         }
 

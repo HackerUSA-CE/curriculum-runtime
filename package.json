@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/HackerUSA-CE/curriculum-runtime#readme",
   "dependencies": {
+    "@ts-morph/bootstrap": "^0.5.2",
     "codemirror": "^5.55.0",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.12"
