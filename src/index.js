@@ -39,7 +39,7 @@ const components = {
             'typescript': 'text/typescript'
         }
         let tests = {
-            javascript: (code, babelConfig = { presets: [ 'env' ] }) => {
+            javascript: (code, babelConfig = { filename: 'test.js', presets: [ 'env' ] }) => {
                 let log = []
                 let console = {
                     log: (vars) => {
@@ -65,9 +65,10 @@ const components = {
             },
             jsx: (code) => {
                 tests.javascript(code, {
+                    filename: 'test.jsx',
                     plugins: [
                         'proposal-class-properties',
-                        'plugin-transform-modules-commonjs'
+                        'transform-modules-commonjs'
                         // ["module-resolver", {
                         //     "root": ["./"]
                         // }]
@@ -81,6 +82,7 @@ const components = {
             },
             typescript: (code) => {
                  tests.javascript(code, {
+                    filename: 'test.ts',
                     presets: ["@babel/preset-typescript"]
                 })
             }
