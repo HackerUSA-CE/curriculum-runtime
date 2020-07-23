@@ -27,7 +27,7 @@ const components = {
     'code-exercise': (codeExerciseDiv) => {
         let codeExerciseTextArea = codeExerciseDiv.querySelector('[data-textarea]')
         let codeExerciseTestOutput = codeExerciseDiv.querySelector('[data-test-output]') 
-        let {testScript} = getMetadata(codeExerciseDiv)
+        let { setupScript, testScript } = getMetadata(codeExerciseDiv)
         let editor = CodeMirror.fromTextArea(codeExerciseTextArea, {
             lineNumbers: true,
             mode: 'javascript',
@@ -48,10 +48,12 @@ const components = {
                 }
             }
             try {
-                let test = new Function('expect', 'console', `${code}\n${testScript}`)
-                test(chai.expect, console)
+                let test = new Function('expect', 'console', 'code', `${setupScript}\n${code}\n${testScript}`)
+                test(chai.expect, console, code)
+                codeExerciseTestOutput.color = 'green'
                 codeExerciseTestOutput.innerText = "Great Job!"
             } catch(err){
+                codeExerciseTestOutput.color = 'red'
                 codeExerciseTestOutput.innerText = err.message
             }
         }
