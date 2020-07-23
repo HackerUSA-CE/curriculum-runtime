@@ -50,7 +50,7 @@ const components = {
                     let completeScript = `${setupScript}\n${code}\n${testScript}`
                     
                     completeScript = Babel.transform(completeScript, babelConfig).code
-
+console.log(completeScript)
                     let test = new Function('expect', 'console', 'code', completeScript)
                     test(chai.expect, console, code)
                     codeExerciseTestOutput.style.color = 'green'
@@ -83,7 +83,7 @@ const components = {
             typescript: (code) => {
                  tests.javascript(code, {
                     filename: 'test.ts',
-                    presets: ["@babel/preset-typescript"]
+                    presets: ["preset-typescript"]
                 })
             }
         }
