@@ -83,7 +83,7 @@ console.log(completeScript)
             typescript: (code) => {
                  tests.javascript(code, {
                     filename: 'test.ts',
-                    presets: ["preset-typescript"]
+                    presets: ["typescript"]
                 })
             }
         }
