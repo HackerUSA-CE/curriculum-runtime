@@ -1,5 +1,8 @@
 import CodeMirror from 'codemirror/lib/codemirror.js'
 import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/mode/python/python.js'
+import 'codemirror/mode/jsx/jsx.js'
+
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material-darker.css'
 
@@ -25,40 +28,69 @@ const components = {
         }
     },
     'code-exercise': (codeExerciseDiv) => {
+        let modes = {
+            'javascript': 'javascript',
+            'python': 'python',
+            'jsx': 'jsx',
+            'typescript': 'text/typescript'
+        }
+        let tests = {
+            javascript: (code, babelConfig = null) => {
+                let log = []
+                let console = {
+                    log: (vars) => {
+                        log.push(...vars)
+                    }
+                }
+                try {
+                    let completeScript = `${setupScript}\n${code}\n${testScript}`
+                    if(babelConfig) completeScript = Babel.transform(completeScript, babelConfig).code
+                    let test = new Function('expect', 'console', 'code', completeScript)
+                    test(chai.expect, console, code)
+                    codeExerciseTestOutput.color = 'green'
+                    codeExerciseTestOutput.innerText = "Great Job!"
+                } catch(err){
+                    codeExerciseTestOutput.color = 'red'
+                    codeExerciseTestOutput.innerText = err.message
+                }
+            },
+            python: () => {
+                codeExerciseTestOutput.innerText = '(Testing is not yet implemented for Python)'
+            },
+            jsx: (code) => {
+                tests.javascript(code, {
+                    plugins: ['proposal-class-properties'],
+                    presets: [['react', {
+                        "pragma": "createElement", // default pragma is React.createElement
+                        "pragmaFrag": "span", // default is React.Fragment
+                        "throwIfNamespace": false // defaults to true
+                    }]]
+                })
+            },
+            typescript: (code) => {
+                 tests.javascript(code, {
+                    presets: ["@babel/preset-typescript"]
+                })
+            }
+        }
         let codeExerciseTextArea = codeExerciseDiv.querySelector('[data-textarea]')
         let codeExerciseTestOutput = codeExerciseDiv.querySelector('[data-test-output]') 
-        let { setupScript, testScript } = getMetadata(codeExerciseDiv)
+        let { setupScript, testScript, language } = getMetadata(codeExerciseDiv)
         let editor = CodeMirror.fromTextArea(codeExerciseTextArea, {
             lineNumbers: true,
-            mode: 'javascript',
+            mode: modes[language],
             theme: 'material-darker'
         })
 
         editor.on('change', () => {
-            testCode()
-        })
-
-        let testCode = () => {
             chai.should()
             let code = editor.getValue()
-            let log = []
-            let console = {
-                log: (vars) => {
-                    log.push(...vars)
-                }
-            }
-            try {
-                let test = new Function('expect', 'console', 'code', `${setupScript}\n${code}\n${testScript}`)
-                test(chai.expect, console, code)
-                codeExerciseTestOutput.color = 'green'
-                codeExerciseTestOutput.innerText = "Great Job!"
-            } catch(err){
-                codeExerciseTestOutput.color = 'red'
-                codeExerciseTestOutput.innerText = err.message
-            }
-        }
+            testCode(code)
+        })
 
-        setTimeout(testCode, 1000)
+        let testCode = (code) =>  tests[language](code)
+
+        setTimeout(testCode, 500)
     }
 }
 
