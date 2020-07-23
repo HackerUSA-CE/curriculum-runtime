@@ -86,11 +86,13 @@ const components = {
             }
         }
 
+        let { setupScript, testScript, language } = getMetadata(codeExerciseDiv)
+
         if(language === 'jsx') setupScript = `${reactScript}\n${setupScript}`
 
         let codeExerciseTextArea = codeExerciseDiv.querySelector('[data-textarea]')
         let codeExerciseTestOutput = codeExerciseDiv.querySelector('[data-test-output]') 
-        let { setupScript, testScript, language } = getMetadata(codeExerciseDiv)
+
         let editor = CodeMirror.fromTextArea(codeExerciseTextArea, {
             lineNumbers: true,
             mode: modes[language],
