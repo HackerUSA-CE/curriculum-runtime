@@ -4,7 +4,7 @@ import 'codemirror/mode/python/python.js'
 import 'codemirror/mode/jsx/jsx.js'
 
 import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/material-darker.css'
+import 'codemirror/theme/base16-light.css'
 
 let chaiScript = document.createElement('script')
 chaiScript.src= "https://unpkg.com/chai/chai.js"
@@ -67,6 +67,7 @@ const components = {
                 tests.javascript(code, {
                     plugins: [
                         'proposal-class-properties',
+                        '@babel/plugin-transform-modules-commonjs'
                         // ["module-resolver", {
                         //     "root": ["./"]
                         // }]
@@ -93,7 +94,7 @@ const components = {
         let editor = CodeMirror.fromTextArea(codeExerciseTextArea, {
             lineNumbers: true,
             mode: modes[language],
-            theme: 'material-darker'
+            theme: 'base16-light'
         })
 
         editor.on('change', () => {
