@@ -10,6 +10,10 @@ let chaiScript = document.createElement('script')
 chaiScript.src= "https://unpkg.com/chai/chai.js"
 document.head.append(chaiScript)
 
+let babelScript = document.createElement('script')
+babelScript.src= "https://unpkg.com/@babel/standalone/babel.min.js"
+document.head.append(babelScript)
+
 const components = {
     'multiple-choice': (questionDiv) => {
         let { questionId } = questionDiv.dataset
@@ -45,6 +49,7 @@ const components = {
                 try {
                     let completeScript = `${setupScript}\n${code}\n${testScript}`
                     if(babelConfig) completeScript = Babel.transform(completeScript, babelConfig).code
+                    console.log(completeScript)
                     let test = new Function('expect', 'console', 'code', completeScript)
                     test(chai.expect, console, code)
                     codeExerciseTestOutput.color = 'green'
@@ -58,8 +63,16 @@ const components = {
                 codeExerciseTestOutput.innerText = '(Testing is not yet implemented for Python)'
             },
             jsx: (code) => {
+                setupScript = `
+                ${reactScript}
+                ${setupScript}`
                 tests.javascript(code, {
-                    plugins: ['proposal-class-properties'],
+                    plugins: [
+                        'proposal-class-properties',
+                        ["module-resolver", {
+                            "root": ["./"]
+                        }]
+                    ],
                     presets: [['react', {
                         "pragma": "createElement", // default pragma is React.createElement
                         "pragmaFrag": "span", // default is React.Fragment
@@ -110,3 +123,49 @@ const register = () => {
     }
 }
 register()
+
+
+const reactScript = `
+class Component {
+    setState(state){
+        Object.assign(this.state, state)
+    }
+}
+const React = {
+    Component
+}
+const flatten = array => array.reduce( (array, element) => (
+    Array.isArray(element)
+        ? [ ...array, ...flatten(element) ]
+        : [ ...array, element ]
+), [])
+
+const createComponent = (component, props, children) => {
+    let element;
+    props = props ? props : {}
+    if(component.prototype instanceof Component ){
+        let instance = new component(props);
+        instance.props = { ...props, children }
+        element = instance.render()
+        element.instance = instance
+    } else {
+        element = component(props)
+    }
+    element.className = component.name
+    return element
+}
+
+const createDOMElement = (tagName, props, children) => {
+    const element = document.createElement(tagName)
+    for(let propName in props) element[propName] = props[propName]
+    element.append(...children)
+    return element
+}
+
+const createElement = (tagName, props, ...children) =>{
+    children = flatten(children)
+    return typeof tagName == 'string' 
+        ? createDOMElement(tagName, props, children)
+        : createComponent(tagName, props, children)
+}
+`
