@@ -63,9 +63,6 @@ const components = {
                 codeExerciseTestOutput.innerText = '(Testing is not yet implemented for Python)'
             },
             jsx: (code) => {
-                setupScript = `
-                ${reactScript}
-                ${setupScript}`
                 tests.javascript(code, {
                     plugins: [
                         'proposal-class-properties',
@@ -86,6 +83,9 @@ const components = {
                 })
             }
         }
+
+        if(language === 'jsx') setupScript = `${reactScript}\n${setupScript}`
+        
         let codeExerciseTextArea = codeExerciseDiv.querySelector('[data-textarea]')
         let codeExerciseTestOutput = codeExerciseDiv.querySelector('[data-test-output]') 
         let { setupScript, testScript, language } = getMetadata(codeExerciseDiv)
