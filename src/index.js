@@ -126,8 +126,6 @@ const register = () => {
         }
     }
 }
-register()
-
 
 const reactScript = `
 class Component {
@@ -173,3 +171,4 @@ const createElement = (tagName, props, ...children) =>{
         : createComponent(tagName, props, children)
 }
 `
+register()
