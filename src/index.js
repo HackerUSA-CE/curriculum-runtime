@@ -67,7 +67,7 @@ const components = {
                 tests.javascript(code, {
                     plugins: [
                         'proposal-class-properties',
-                        '@babel/plugin-transform-modules-commonjs'
+                        'plugin-transform-modules-commonjs'
                         // ["module-resolver", {
                         //     "root": ["./"]
                         // }]
