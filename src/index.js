@@ -89,7 +89,7 @@ console.log(completeScript)
             },
             typescript: async (code) => {
                 const project = await createProject({ useInMemoryFileSystem: true });
-                project.createSourceFile(code);
+                project.createSourceFile("test.ts", code);
 
                 // const program = project.createProgram();
                 const diagnostics = ts.getPreEmitDiagnostics(project.createProgram());
