@@ -69,9 +69,9 @@ const components = {
                 tests.javascript(code, {
                     plugins: [
                         'proposal-class-properties',
-                        ["module-resolver", {
-                            "root": ["./"]
-                        }]
+                        // ["module-resolver", {
+                        //     "root": ["./"]
+                        // }]
                     ],
                     presets: [['react', {
                         "pragma": "createElement", // default pragma is React.createElement
