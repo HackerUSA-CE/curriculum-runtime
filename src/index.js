@@ -108,7 +108,7 @@ const components = {
             func.timeout = setTimeout(func, delay)
         }
 
-        //setTimeout(testCode, 500)
+        setTimeout(displayTestResults, 1000)
     }
 }
 
