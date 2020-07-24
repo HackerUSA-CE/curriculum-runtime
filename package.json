@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve-local": "serve --cors -l 8080"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
     "css-loader": "^3.6.0",
     "node-sass": "^4.14.1",
     "sass-loader": "^9.0.2",
+    "serve": "^11.3.2",
     "style-loader": "^1.2.1"
   }
 }

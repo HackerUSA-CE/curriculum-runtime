@@ -2,12 +2,10 @@ import CodeMirror from 'codemirror/lib/codemirror.js'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/mode/python/python.js'
 import 'codemirror/mode/jsx/jsx.js'
-
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/base16-light.css'
-import { createProject, ts } from "@ts-morph/bootstrap";
 
-
+const WEB_WORKER_URL = 'http://localhost:8080/test.worker.js'
 
 let chaiScript = document.createElement('script')
 chaiScript.src= "https://unpkg.com/chai/chai.js"
@@ -17,9 +15,20 @@ let babelScript = document.createElement('script')
 babelScript.src= "https://unpkg.com/@babel/standalone/babel.min.js"
 document.head.append(babelScript)
 
-let tsScript = document.createElement('script')
-tsScript.src= "https://unpkg.com/typescript@3.9.7/lib/typescript.js"
-document.head.append(tsScript)
+
+fetch(WEB_WORKER_URL)
+    .then( res => res.text())
+    .then( result => {
+        let workerSrcBlob = new Blob([result], { type: 'text/javascript' });
+        let  workerBlobURL = URL.createObjectURL(workerSrcBlob);
+        
+        var testWorker = new Worker(workerBlobURL)
+        testWorker.onmessage = function(e){
+            console.log(e)
+        }
+    })
+
+
 
 const components = {
     'multiple-choice': (questionDiv) => {
@@ -45,60 +54,7 @@ const components = {
             'jsx': 'jsx',
             'typescript': 'text/typescript'
         }
-        let tests = {
-            javascript: (code, babelConfig = { filename: 'test.js', presets: [ 'env' ] }) => {
-                let log = []
-                let mockConsole = {
-                    log: (vars) => {
-                        log.push(...vars)
-                    }
-                }
-                try {
-                    let completeScript = `${setupScript}\n${code}\n${testScript}`
-                    
-                    completeScript = Babel.transform(completeScript, babelConfig).code
-console.log(completeScript)
-                    let test = new Function('expect', 'console', 'code', completeScript)
-                    test(chai.expect, mockConsole, code)
-                    codeExerciseTestOutput.style.color = 'green'
-                    codeExerciseTestOutput.innerText = "Great Job!"
-                } catch(err){
-                    codeExerciseTestOutput.style.color = 'red'
-                    codeExerciseTestOutput.innerText = err.message
-                }
-            },
-            python: () => {
-                codeExerciseTestOutput.innerText = '(Testing is not yet implemented for Python)'
-            },
-            jsx: (code) => {
-                tests.javascript(code, {
-                    filename: 'test.jsx',
-                    plugins: [
-                        'proposal-class-properties',
-                        'transform-modules-commonjs'
-                        // ["module-resolver", {
-                        //     "root": ["./"]
-                        // }]
-                    ],
-                    presets: [['react', {
-                        "pragma": "createElement", // default pragma is React.createElement
-                        "pragmaFrag": "span", // default is React.Fragment
-                        "throwIfNamespace": false // defaults to true
-                    }]]
-                })
-            },
-            typescript: async (code) => {
-                const project = await createProject({ useInMemoryFileSystem: true });
-                project.createSourceFile("test.ts", code);
-
-                // const program = project.createProgram();
-                const diagnostics = ts.getPreEmitDiagnostics(project.createProgram());
-
-                console.log(project.formatDiagnosticsWithColorAndContext(diagnostics));
-                tests.javascript(ts.transpile(code))
-            }
-        }
-
+        
         let { setupScript, testScript, language } = getMetadata(codeExerciseDiv)
 
         if(language === 'jsx') setupScript = `${reactScript}\n${setupScript}`
@@ -115,10 +71,9 @@ console.log(completeScript)
         editor.on('change', () => {
             chai.should()
             let code = editor.getValue()
-            testCode(code)
+            let completeScript = `${setupScript}\n${code}\n${testScript}`
+            // send completeScript and language to the worker
         })
-
-        let testCode = (code) =>  tests[language](code)
 
         setTimeout(testCode, 500)
     }
