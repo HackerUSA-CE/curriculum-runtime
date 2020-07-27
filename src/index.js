@@ -5,7 +5,7 @@ import 'codemirror/mode/jsx/jsx.js'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/base16-light.css'
 
-const WEB_WORKER_URL = 'http://localhost:8080/test.worker.js'
+const WEB_WORKER_URL = 'https://hackerusa-ce.github.io/curriculum-runtime/test.worker.js'
 
 let runTest;
 
