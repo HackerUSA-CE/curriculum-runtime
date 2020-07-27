@@ -88,7 +88,7 @@ const components = {
         })
 
         editor.on('change', async () => {
-            debounce(displayTestResults, 3000)
+            debounce(displayTestResults, 1500)
         })
 
         let displayTestResults = async () => {
