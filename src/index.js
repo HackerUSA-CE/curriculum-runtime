@@ -62,7 +62,7 @@ const components = {
             answerButton.addEventListener('click', () => {
                 for (let answerButton of answerButtons) {
                     answerButton.querySelector('input').checked = false
-                    answerButton.querySelector('[data-feedback-for="${questionId}"]').innerText = ''
+                    answerButton.querySelector(`[data-feedback-for="${questionId}"]`).innerText = ''
                 }
                 radio.checked = true;
                 feedbackDiv.style.color = correct ? 'green' : 'red'
