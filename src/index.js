@@ -55,16 +55,15 @@ const components = {
     'multiple-choice': (questionDiv) => {
         let { questionId } = questionDiv.dataset
         let answerButtons = questionDiv.querySelectorAll(`[data-answer-for="${questionId}"]`)
-        let feedbackDiv = questionDiv.querySelector(`[data-feedback-for="${questionId}"]`)
         for (let answerButton of answerButtons) {
+            let feedbackDiv = answerButton.querySelector(`[data-feedback-for="${questionId}"]`)
             let radio = answerButton.querySelector('input')
             let { correct, feedback } = getMetadata(answerButton)
             answerButton.addEventListener('click', () => {
                 for (let answerButton of answerButtons) answerButton.querySelector('input').checked = false
                 radio.checked = true;
                 feedbackDiv.style.color = correct ? 'green' : 'red'
-                feedbackDiv.innerText = `${correct ? "Correct!" : "Incorrect"}
-                ${feedback || ''}`
+                feedbackDiv.innerText = `${correct ? "Correct!" : "Incorrect"} ${feedback ? `- ${feedback}` : ''}`
             })
         }
     },
