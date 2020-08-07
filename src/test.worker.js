@@ -12,6 +12,14 @@ onmessage = async ({ data: testSpec }) => {
     postMessage(results)
 }
 
+let logEncode = variable => {
+    if(typeof variable === 'string') return `"${variable}"`
+    if(typeof variable === 'number') return variable
+    if([ null, undefined ].includes(variable)) return variable.toString()
+    if(isNaN(variable)) return variable.toString()
+    return JSON.stringify(variable, null, 2)
+}
+
 let tests = {
 
     javascript: (scripts, babelConfig = { filename: 'test.js', presets: ['env'] }) => {
@@ -21,7 +29,7 @@ let tests = {
         let log = []
         let mockConsole = {
             log: (...vars) => {
-                log.push(...vars)
+                log.push(vars.map(logEncode).join(', '))
             }
         }
         try {
