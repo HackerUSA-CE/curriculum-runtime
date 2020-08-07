@@ -16,7 +16,6 @@ let logEncode = variable => {
     if(typeof variable === 'string') return `"${variable}"`
     if(typeof variable === 'number') return variable
     if([ null, undefined ].includes(variable)) return variable.toString()
-    if(isNaN(variable)) return variable.toString()
     return JSON.stringify(variable, null, 2)
 }
 
