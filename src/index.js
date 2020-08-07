@@ -60,7 +60,10 @@ const components = {
             let radio = answerButton.querySelector('input')
             let { correct, feedback } = getMetadata(answerButton)
             answerButton.addEventListener('click', () => {
-                for (let answerButton of answerButtons) answerButton.querySelector('input').checked = false
+                for (let answerButton of answerButtons) {
+                    answerButton.querySelector('input').checked = false
+                    answerButton.querySelector('[data-feedback-for="${questionId}"]').innerText = ''
+                }
                 radio.checked = true;
                 feedbackDiv.style.color = correct ? 'green' : 'red'
                 feedbackDiv.innerText = `${correct ? "Correct!" : "Incorrect"} ${feedback ? `- ${feedback}` : ''}`
