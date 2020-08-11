@@ -2,6 +2,7 @@ import CodeMirror from 'codemirror/lib/codemirror.js'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/mode/python/python.js'
 import 'codemirror/mode/jsx/jsx.js'
+import 'codemirror/mode/htmlmixed/htmlmixed.js'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/base16-light.css'
 
@@ -75,7 +76,8 @@ const components = {
             'javascript': 'javascript',
             'python': 'python',
             'jsx': 'jsx',
-            'typescript': 'text/typescript'
+            'typescript': 'text/typescript',
+            'html': 'htmlmixed'
         }
 
         let { setupScript, testScript, language } = getMetadata(codeExerciseDiv)
