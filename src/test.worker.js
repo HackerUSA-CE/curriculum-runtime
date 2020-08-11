@@ -58,6 +58,14 @@ let tests = {
         }
     },
 
+    html: (scripts) => {
+        let { setupScript, submissionScript, testScript } = scripts
+        submissionScript = `
+            document.write(\`${submissionScript}\`)
+        `
+        return tests.javascript({ setupScript, submissionScript, testScript })
+    },
+
     jsx: (scripts) => {
         let { setupScript, submissionScript, testScript } = scripts
         setupScript = `${reactScript};\n${setupScript}`
