@@ -99,7 +99,7 @@ const components = {
         let { setupScript, testScript, language, showConsole, showDOM } = getMetadata(codeExerciseDiv)
 
         if(showConsole === null) showConsole = defaultConsoleView[language]
-        if(showDOM === null) showOutput = defaultDOMView[language]
+        if(showDOM === null) showDOM = defaultDOMView[language]
 
         let codeExerciseTextArea = codeExerciseDiv.querySelector('[data-code-editor]')
         let codeExerciseTestOutput = codeExerciseDiv.querySelector('[data-test-output]')
