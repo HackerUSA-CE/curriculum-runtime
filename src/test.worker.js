@@ -38,8 +38,8 @@ let tests = {
             completeScript = Babel.transform(completeScript, babelConfig).code
             let test = new Function('expect', 'console', 'code', 'window', 'document', 'require', 'exports', 'createModule', completeScript)
 
-            test(expect, mockConsole, originalScript, window, document, require, createModule, createModule(fileName))
-            console.log(fileName, cache['app.js'].__esModule, cache['app.js'].message, completeScript)
+            test(expect, mockConsole, originalScript, window, document, require, createModule(fileName), createModule)
+
             return {
                 log,
                 color: 'green',
