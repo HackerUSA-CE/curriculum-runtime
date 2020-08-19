@@ -39,7 +39,7 @@ let tests = {
             let test = new Function('expect', 'console', 'code', 'window', 'document', 'require', 'exports', 'createModule', completeScript)
 
             test(expect, mockConsole, originalScript, window, document, require, createModule, createModule(fileName))
-            console.log(fileName, cache['app.js'], completeScript)
+            console.log(fileName, cache['app.js'].__esModule, cache['app.js'].message, completeScript)
             return {
                 log,
                 color: 'green',
