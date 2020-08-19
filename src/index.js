@@ -130,7 +130,9 @@ const components = {
             codeExerciseTestOutput.style.color = color
             codeExerciseTestOutput.innerText = message
             codeExerciseConsoleOutput.innerText = log.join('\n')
-            codeExerciseDOMOutput.srcdoc = dom
+            let newIframe = document.createElement('iframe')
+            newIframe.srcdoc = `<html>${dom}</html>`
+            codeExerciseDOMOutput.replaceWith(newIframe)
         }
 
 
