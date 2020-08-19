@@ -80,10 +80,36 @@ const components = {
             'html': 'htmlmixed'
         }
 
-        let { setupScript, testScript, language } = getMetadata(codeExerciseDiv)
+        let defaultConsoleView = {
+            'javascript': true,
+            'python': true,
+            'jsx': true,
+            'typescript': true,
+            'html': false
+        }
+
+        let defaultDOMView = {
+            'javascript': false,
+            'python': false,
+            'jsx': false,
+            'typescript': false,
+            'html': false
+        }
+
+        let { setupScript, testScript, language, showConsole, showDOM } = getMetadata(codeExerciseDiv)
+
+        if(showConsole === null) showConsole = defaultConsoleView[language]
+        if(showDOM === null) showOutput = defaultDOMView[language]
+
         let codeExerciseTextArea = codeExerciseDiv.querySelector('[data-code-editor]')
         let codeExerciseTestOutput = codeExerciseDiv.querySelector('[data-test-output]')
+        let codeExerciseDOMOutput = codeExerciseDiv.querySelector('[data-dom-output]')
+        let codeExerciseDOMTray = codeExerciseDiv.querySelector('[data-dom-tray]')
         let codeExerciseConsoleOutput = codeExerciseDiv.querySelector('[data-console-output]')
+        let codeExerciseConsoleTray = codeExerciseDiv.querySelector('[data-console-tray]')
+
+        if(showConsole === false) codeExerciseConsoleTray.style.display = 'none'
+        if(showDOM === false) codeExerciseDOMTray.style.display = 'none'
 
         let editor = CodeMirror.fromTextArea(codeExerciseTextArea, {
             lineNumbers: true,
@@ -100,10 +126,11 @@ const components = {
             codeExerciseTestOutput.style.color = 'inherit'
             codeExerciseTestOutput.innerText = 'Testing...'
             codeExerciseConsoleOutput.innerText = ''
-            let { color, message, log } = await runTest(language, { setupScript, submissionScript, testScript})
+            let { color, message, log, dom } = await runTest(language, { setupScript, submissionScript, testScript})
             codeExerciseTestOutput.style.color = color
             codeExerciseTestOutput.innerText = message
             codeExerciseConsoleOutput.innerText = log.join('\n')
+            codeExerciseDOMOutput.innerHTML = dom
         }
 
 

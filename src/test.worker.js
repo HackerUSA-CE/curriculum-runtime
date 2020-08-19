@@ -24,7 +24,7 @@ let tests = {
     javascript: (scripts, babelConfig = { filename: 'test.js', presets: ['env'] }) => {
         const { window } = new JSDOM(`<!DOCTYPE html><html><body></body></html>`);
         const { document } = window;
-        const { setupScript, submissionScript, testScript } = scripts
+        const { setupScript, submissionScript, testScript, originalScript = submissionScript } = scripts
         let log = []
         let mockConsole = {
             log: (...vars) => {
@@ -37,17 +37,19 @@ let tests = {
             completeScript = Babel.transform(completeScript, babelConfig).code
             let test = new Function('expect', 'console', 'code', 'window', 'document', completeScript)
 
-            test(expect, mockConsole, submissionScript, window, document)
+            test(expect, mockConsole, originalScript, window, document)
             return {
                 log,
                 color: 'green',
-                message: "Great Job!"
+                message: "Great Job!",
+                dom: document.innerHTML
             }
         } catch (err) {
             return {
                 log,
                 color: 'red',
-                message: err.message
+                message: err.message,
+                dom: document.innerHTML
             }
         }
     },
@@ -60,10 +62,11 @@ let tests = {
 
     html: (scripts) => {
         let { setupScript, submissionScript, testScript } = scripts
+        let originalScript = submissionScript
         submissionScript = `
             document.write(\`${submissionScript}\`)
         `
-        return tests.javascript({ setupScript, submissionScript, testScript })
+        return tests.javascript({ setupScript, submissionScript, testScript, originalScript })
     },
 
     jsx: (scripts) => {
@@ -98,10 +101,11 @@ let tests = {
                 color: 'red'
             } 
         } else { 
+            let originalScript = submissionScript
             setupScript = ts.transpile(setupScript)
             submissionScript = ts.transpile(submissionScript)
             testScript = ts.transpile(testScript)
-            return tests.javascript({ setupScript, submissionScript, testScript })
+            return tests.javascript({ setupScript, submissionScript, testScript, originalScript })
         }
     }
 }
