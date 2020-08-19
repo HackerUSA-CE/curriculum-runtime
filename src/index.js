@@ -18,8 +18,8 @@ fetch(WEB_WORKER_URL)
         let testWorker = new Worker(workerBlobURL)
         let testQueue = []
 
-        runTest = (language, scripts) => {
-            const testSpec =  { language, scripts }
+        runTest = (fileName, language, scripts) => {
+            const testSpec =  { language, scripts, fileName }
             return new Promise(resolve => {
                 testQueue.push({ testSpec, resolve })
                 if(!managerRunning) runQueueManager()
@@ -96,7 +96,7 @@ const components = {
             'html': false
         }
 
-        let { setupScript, testScript, language, showConsole, showDOM } = getMetadata(codeExerciseDiv)
+        let { setupScript, testScript, language, showConsole, showDOM, fileName } = getMetadata(codeExerciseDiv)
 
         if(showConsole === null) showConsole = defaultConsoleView[language]
         if(showDOM === null) showDOM = defaultDOMView[language]
@@ -126,7 +126,7 @@ const components = {
             codeExerciseTestOutput.style.color = 'inherit'
             codeExerciseTestOutput.innerText = 'Testing...'
             codeExerciseConsoleOutput.innerText = ''
-            let { color, message, log, dom } = await runTest(language, { setupScript, submissionScript, testScript})
+            let { color, message, log, dom } = await runTest(fileName, language, { setupScript, submissionScript, testScript})
             codeExerciseTestOutput.style.color = color
             codeExerciseTestOutput.innerText = message
             codeExerciseConsoleOutput.innerText = log.join('\n')

@@ -7,8 +7,8 @@ import chaiDOM from 'chai-dom'
 chai.use(chaiDOM)
 
 onmessage = async ({ data: testSpec }) => {
-    const { language, scripts } = testSpec
-    let results = await tests[language](scripts)
+    const { language, fileName, scripts } = testSpec
+    let results = await tests[language](fileName, scripts)
     postMessage(results)
 }
 
@@ -22,10 +22,10 @@ let logEncode = variable => {
 
 let tests = {
 
-    javascript: (scripts, babelConfig = { filename: 'test.js', presets: ['env'] }) => {
+    javascript: (fileName, scripts, babelConfig = { filename: 'test.js', presets: ['env'] }) => {
         const { window } = new JSDOM(`<!DOCTYPE html><html><body></body></html>`);
         const { document } = window;
-        const { setupScript, submissionScript, testScript, originalScript = submissionScript, fileName } = scripts
+        const { setupScript, submissionScript, testScript, originalScript = submissionScript } = scripts
         let log = []
         let mockConsole = {
             log: (...vars) => {
@@ -36,9 +36,9 @@ let tests = {
             let completeScript = `${setupScript};\n${submissionScript};\n${testScript}`
 
             completeScript = Babel.transform(completeScript, babelConfig).code
-            let test = new Function('expect', 'console', 'code', 'window', 'document', 'require', 'exports', completeScript)
+            let test = new Function('expect', 'console', 'code', 'window', 'document', 'require', 'exports', 'createModule', completeScript)
 
-            test(expect, mockConsole, originalScript, window, document, require, createModule(fileName))
+            test(expect, mockConsole, originalScript, window, document, require, createModule, createModule(fileName))
             return {
                 log,
                 color: 'green',
@@ -61,19 +61,19 @@ let tests = {
         }
     },
 
-    html: (scripts) => {
+    html: (fileName, scripts) => {
         let { setupScript, submissionScript, testScript } = scripts
         let originalScript = submissionScript
         submissionScript = `
             document.write(\`${submissionScript}\`)
         `
-        return tests.javascript({ setupScript, submissionScript, testScript, originalScript })
+        return tests.javascript(fileName, { setupScript, submissionScript, testScript, originalScript })
     },
 
-    jsx: (scripts) => {
+    jsx: (fileName, scripts) => {
         let { setupScript, submissionScript, testScript } = scripts
         setupScript = `${reactScript};\n${setupScript}`
-        return tests.javascript({ setupScript, submissionScript, testScript}, {
+        return tests.javascript(fileName, { setupScript, submissionScript, testScript}, {
             filename: 'test.jsx',
             plugins: [
                 'proposal-class-properties',
@@ -87,10 +87,10 @@ let tests = {
         })
     },
 
-    typescript: async (scripts) => {
+    typescript: async (fileName, scripts) => {
         let { setupScript, submissionScript, testScript } = scripts
         const project = await createProject({ useInMemoryFileSystem: true });
-        project.createSourceFile("test.ts", submissionScript);
+        project.createSourceFile(fileName, submissionScript);
 
         const diagnostics = ts.getPreEmitDiagnostics(project.createProgram());
 
@@ -106,7 +106,7 @@ let tests = {
             setupScript = ts.transpile(setupScript)
             submissionScript = ts.transpile(submissionScript)
             testScript = ts.transpile(testScript)
-            return tests.javascript({ setupScript, submissionScript, testScript, originalScript })
+            return tests.javascript(fileName, { setupScript, submissionScript, testScript, originalScript })
         }
     }
 }
@@ -114,6 +114,7 @@ let tests = {
 const cache = {}
 
 const require = (module) => {
+    if(cache[module] === undefined && cache[`${module}.js`] === undefined) throw Error(`Could not find module '${module}'`)
     return cache[module] || cache[`${module}.js`] || {}
 }
 
