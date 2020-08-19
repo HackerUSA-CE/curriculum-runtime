@@ -39,6 +39,7 @@ let tests = {
             let test = new Function('expect', 'console', 'code', 'window', 'document', 'require', 'exports', 'createModule', completeScript)
 
             test(expect, mockConsole, originalScript, window, document, require, createModule, createModule(fileName))
+            console.log(fileName, cache, completeScript)
             return {
                 log,
                 color: 'green',
