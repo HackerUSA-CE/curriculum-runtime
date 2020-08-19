@@ -36,7 +36,7 @@ let tests = {
             let completeScript = `${setupScript};\n${submissionScript};\n${testScript}`
 
             completeScript = Babel.transform(completeScript, babelConfig).code
-            let test = new Function('expect', 'console', 'code', 'window', 'document', 'require', 'module', completeScript)
+            let test = new Function('expect', 'console', 'code', 'window', 'document', 'require', 'exports', completeScript)
 
             test(expect, mockConsole, originalScript, window, document, require, createModule(fileName))
             return {
@@ -114,15 +114,12 @@ let tests = {
 const cache = {}
 
 const require = (module) => {
-    return cache[module] || cache[`${module}.js`]
+    return cache[module] || cache[`${module}.js`] || {}
 }
 
 const createModule = (fileName) => {
-    return {
-        set exports(value) {
-            cache[fileName] = value
-        }
-    }
+    cache[fileName] = {}
+    return cache[fileName]
 }
 
 const reactScript = `
