@@ -93,7 +93,7 @@ const components = {
             'python': false,
             'jsx': false,
             'typescript': false,
-            'html': false
+            'html': true
         }
 
         let { setupScript, testScript, language, showConsole, showDOM, fileName } = getMetadata(codeExerciseDiv)
@@ -130,7 +130,7 @@ const components = {
             codeExerciseTestOutput.style.color = color
             codeExerciseTestOutput.innerText = message
             codeExerciseConsoleOutput.innerText = log.join('\n')
-            codeExerciseDOMOutput.innerHTML = dom
+            codeExerciseDOMOutput.srcdoc = dom
         }
 
 
