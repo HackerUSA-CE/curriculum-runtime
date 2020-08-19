@@ -15,6 +15,7 @@ onmessage = async ({ data: testSpec }) => {
 let logEncode = variable => {
     if(typeof variable === 'string') return `"${variable}"`
     if(typeof variable === 'number') return variable
+    if(variable === undefined) return variable
     if([ null, undefined ].includes(variable)) return variable.toString()
     return JSON.stringify(variable, null, 2)
 }
@@ -24,7 +25,7 @@ let tests = {
     javascript: (scripts, babelConfig = { filename: 'test.js', presets: ['env'] }) => {
         const { window } = new JSDOM(`<!DOCTYPE html><html><body></body></html>`);
         const { document } = window;
-        const { setupScript, submissionScript, testScript, originalScript = submissionScript } = scripts
+        const { setupScript, submissionScript, testScript, originalScript = submissionScript, fileName } = scripts
         let log = []
         let mockConsole = {
             log: (...vars) => {
@@ -35,21 +36,21 @@ let tests = {
             let completeScript = `${setupScript};\n${submissionScript};\n${testScript}`
 
             completeScript = Babel.transform(completeScript, babelConfig).code
-            let test = new Function('expect', 'console', 'code', 'window', 'document', completeScript)
+            let test = new Function('expect', 'console', 'code', 'window', 'document', 'require', 'module', completeScript)
 
-            test(expect, mockConsole, originalScript, window, document)
+            test(expect, mockConsole, originalScript, window, document, require, createModule(fileName))
             return {
                 log,
                 color: 'green',
                 message: "Great Job!",
-                dom: document.innerHTML
+                dom: document.body.innerHTML
             }
         } catch (err) {
             return {
                 log,
                 color: 'red',
                 message: err.message,
-                dom: document.innerHTML
+                dom: document.body.innerHTML
             }
         }
     },
@@ -106,6 +107,20 @@ let tests = {
             submissionScript = ts.transpile(submissionScript)
             testScript = ts.transpile(testScript)
             return tests.javascript({ setupScript, submissionScript, testScript, originalScript })
+        }
+    }
+}
+
+const cache = {}
+
+const require = (module) => {
+    return cache[module] || cache[`${module}.js`]
+}
+
+const createModule = (fileName) => {
+    return {
+        set exports(value) {
+            cache[fileName] = value
         }
     }
 }
