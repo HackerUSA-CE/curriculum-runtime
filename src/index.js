@@ -114,8 +114,11 @@ const components = {
         let editor = CodeMirror.fromTextArea(codeExerciseTextArea, {
             lineNumbers: true,
             mode: modes[language],
-            theme: 'base16-light'
+            theme: 'base16-light',
+            viewportMargin: Infinity
         })
+
+        codeExerciseTextArea.querySelector('.CodeMirror').style.height = 'auto'
 
         editor.on('change', async () => {
             debounce(displayTestResults, 1500)
