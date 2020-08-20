@@ -118,7 +118,7 @@ const components = {
             viewportMargin: Infinity
         })
 
-        codeExerciseTextArea.querySelector('.CodeMirror').style.height = 'auto'
+        codeExerciseDiv.querySelector('.CodeMirror').style.height = 'auto'
 
         editor.on('change', async () => {
             debounce(displayTestResults, 1500)
