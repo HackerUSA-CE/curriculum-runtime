@@ -136,6 +136,7 @@ const components = {
             let newIframe = document.createElement('iframe')
             newIframe.srcdoc = `<html>${dom}</html>`
             codeExerciseDOMOutput.replaceWith(newIframe)
+            codeExerciseDOMOutput = newIframe
         }
 
 
