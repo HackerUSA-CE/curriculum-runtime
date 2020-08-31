@@ -153,7 +153,10 @@ const createComponent = (component, props, children) => {
         element = component(props)
     }
     if(element === undefined) throw Error(\`Error: \${component.name}(...): Nothing was returned from render. This usually means a return statement is missing. Or, to render nothing, return null.\`)
-    if(element) element.component = component
+    if(element){
+        element.component = component
+        element.props = props
+    }
     return element
 }
 
