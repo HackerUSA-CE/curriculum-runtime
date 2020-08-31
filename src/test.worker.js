@@ -122,7 +122,7 @@ const require = (module) => {
 }
 
 const createModule = (fileName) => {
-    cache[fileName] = {}
+    cache[fileName] = {__esModule: true}
     return cache[fileName]
 }
 
