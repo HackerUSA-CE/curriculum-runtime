@@ -134,6 +134,9 @@ const components = {
             codeExerciseTestOutput.innerText = message
             codeExerciseConsoleOutput.innerText = log.join('\n')
             let newIframe = document.createElement('iframe')
+            Object.assign(newIframe.style, {
+                borderStyle: 'none', width: '100%', height: '100%'
+            })
             newIframe.srcdoc = `<html>${dom}</html>`
             codeExerciseDOMOutput.replaceWith(newIframe)
             codeExerciseDOMOutput = newIframe
