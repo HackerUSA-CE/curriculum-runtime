@@ -78,7 +78,9 @@ let tests = {
             filename: 'test.jsx',
             plugins: [
                 'proposal-class-properties',
-                'transform-modules-commonjs'
+                ['transform-modules-commonjs', {
+                    lazy: () => true
+                }]
             ],
             presets: [['react', {
                 "pragma": "createElement", // default pragma is React.createElement
