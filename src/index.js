@@ -2,6 +2,7 @@ import CodeMirror from 'codemirror/lib/codemirror.js'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/mode/python/python.js'
 import 'codemirror/mode/jsx/jsx.js'
+import 'codemirror/mode/css/css.js'
 import 'codemirror/mode/htmlmixed/htmlmixed.js'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/base16-light.css'
@@ -77,7 +78,8 @@ const components = {
             'python': 'python',
             'jsx': 'jsx',
             'typescript': 'text/typescript',
-            'html': 'htmlmixed'
+            'html': 'htmlmixed',
+            'css': 'css'
         }
 
         let defaultConsoleView = {
@@ -85,7 +87,8 @@ const components = {
             'python': true,
             'jsx': true,
             'typescript': true,
-            'html': false
+            'html': false,
+            'css': false,
         }
 
         let defaultDOMView = {
@@ -93,10 +96,11 @@ const components = {
             'python': false,
             'jsx': false,
             'typescript': false,
-            'html': true
+            'html': true,
+            'css': true
         }
 
-        let { setupScript, testScript, language, showConsole, showDOM, fileName } = getMetadata(codeExerciseDiv)
+        let { setupScript, postScript, testScript, language, showConsole, showDOM, fileName } = getMetadata(codeExerciseDiv)
 
         if(showConsole === null) showConsole = defaultConsoleView[language]
         if(showDOM === null) showDOM = defaultDOMView[language]
@@ -129,7 +133,7 @@ const components = {
             codeExerciseTestOutput.style.color = 'inherit'
             codeExerciseTestOutput.innerText = 'Testing...'
             codeExerciseConsoleOutput.innerText = ''
-            let { color, message, log, dom, resultScript } = await runTest(fileName, language, { setupScript, submissionScript, testScript})
+            let { color, message, log, dom, resultScript } = await runTest(fileName, language, { setupScript, submissionScript, postScript, testScript})
             codeExerciseTestOutput.style.color = color
             codeExerciseTestOutput.innerText = message
             if(resultScript) displayScriptOutput(resultScript)

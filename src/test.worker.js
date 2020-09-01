@@ -25,7 +25,7 @@ let tests = {
     javascript: (fileName, scripts, babelConfig = { filename: 'test.js', presets: ['env'] }) => {
         const { window } = new JSDOM(`<!DOCTYPE html><html><body></body></html>`);
         const { document } = window;
-        const { setupScript, submissionScript, testScript, originalScript = submissionScript } = scripts
+        const { setupScript, submissionScript, postScript, testScript, originalScript = submissionScript } = scripts
         let resultScript;
         let log = []
         let mockConsole = {
@@ -34,8 +34,9 @@ let tests = {
             }
         }
         try {
-            resultScript = Babel.transform(`${setupScript};\n${submissionScript};`, babelConfig).code
-            let completeScript = Babel.transform(`${setupScript};\n${submissionScript};\n${testScript}`, babelConfig).code
+            resultScript = Babel.transform(`${setupScript};\n${submissionScript};${postScript}`, babelConfig).code
+            
+            let completeScript = Babel.transform(`${setupScript};\n${submissionScript};\n${postScript}\n${testScript}`, babelConfig).code
 
             let test = new Function('expect', 'console', 'code', 'window', 'document', 'require', 'exports', 'createModule', completeScript)
 
@@ -66,25 +67,27 @@ let tests = {
     },
 
     html: (fileName, scripts) => {
-        let { setupScript, submissionScript, testScript } = scripts
-        let originalScript = submissionScript
+        let { setupScript, submissionScript, postScript, testScript, originalScript = submissionScript } = scripts
         submissionScript = `
             document.write(\`${submissionScript}\`)
         `
-        return tests.javascript(fileName, { setupScript, submissionScript, testScript, originalScript })
+        return tests.javascript(fileName, { setupScript, submissionScript, postScript, testScript, originalScript })
     },
 
     css: (fileName, scripts) => {
-        let { setupScript, submissionScript, testScript } = scripts
-        let originalScript = submissionScript
-        submissionScript = ``
-        return tests.html(fileName, scripts)
+        let { setupScript, submissionScript, postScript, testScript, originalScript = submissionScript } = scripts
+        submissionScript = `
+            <style>
+                ${submissionScript}
+            </style>
+        `
+        return tests.html(fileName, { originalScript, setupScript, submissionScript, postScript, testScript })
     },
 
     jsx: (fileName, scripts) => {
-        let { setupScript, submissionScript, testScript } = scripts
+        let { setupScript, submissionScript, postScript, testScript, originalScript = submissionScript } = scripts
         setupScript = `${reactScript};\n${setupScript}`
-        return tests.javascript(fileName, { setupScript, submissionScript, testScript}, {
+        return tests.javascript(fileName, { originalScript, setupScript, submissionScript, postScript, testScript}, {
             filename: 'test.jsx',
             plugins: [
                 'proposal-class-properties',
@@ -101,7 +104,7 @@ let tests = {
     },
 
     typescript: async (fileName, scripts) => {
-        let { setupScript, submissionScript, testScript } = scripts
+        let { setupScript, submissionScript, postScript, testScript } = scripts
         const project = await createProject({ useInMemoryFileSystem: true });
         project.createSourceFile(fileName, submissionScript);
 
@@ -119,7 +122,7 @@ let tests = {
             setupScript = ts.transpile(setupScript)
             submissionScript = ts.transpile(submissionScript)
             testScript = ts.transpile(testScript)
-            return tests.javascript(fileName, { setupScript, submissionScript, testScript, originalScript })
+            return tests.javascript(fileName, { setupScript, submissionScript, postScript, testScript, originalScript })
         }
     }
 }
