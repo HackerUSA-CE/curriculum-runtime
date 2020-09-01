@@ -31,7 +31,8 @@ let tests = {
         let mockConsole = {
             log: (...vars) => {
                 log.push(vars.map(logEncode).join(', '))
-            }
+            },
+            history: log
         }
         try {
             resultScript = Babel.transform(`${setupScript};\n${submissionScript};${postScript}`, babelConfig).code

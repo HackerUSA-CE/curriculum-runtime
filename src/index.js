@@ -148,11 +148,13 @@ const components = {
             // codeExerciseDOMOutput = newIframe
         }
 
-        let mockConsole = {
-            log: (...vars) => {
+        let mockConsole = () => ({
+            log: function(...vars){
+                this.history.push(vars.map(logEncode).join(', '))
                 codeExerciseConsoleOutput.innerText += `\n${vars.map(logEncode).join(', ')}`
-            }
-        }
+            },
+            history: []
+        })
 
         let logEncode = variable => {
             if(typeof variable === 'string') return `"${variable}"`
@@ -174,7 +176,7 @@ const components = {
                 require,
                 exports: createModule(fileName),
                 createModule,
-                console: mockConsole
+                console: mockConsole()
             })
             newIframe.contentDocument.write(`<body><script>${resultScript}</script></body>`)
         }
