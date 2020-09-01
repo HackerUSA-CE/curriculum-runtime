@@ -74,6 +74,13 @@ let tests = {
         return tests.javascript(fileName, { setupScript, submissionScript, testScript, originalScript })
     },
 
+    css: (fileName, scripts) => {
+        let { setupScript, submissionScript, testScript } = scripts
+        let originalScript = submissionScript
+        submissionScript = ``
+        return tests.html(fileName, scripts)
+    },
+
     jsx: (fileName, scripts) => {
         let { setupScript, submissionScript, testScript } = scripts
         setupScript = `${reactScript};\n${setupScript}`
