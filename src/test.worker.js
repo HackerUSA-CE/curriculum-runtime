@@ -175,8 +175,10 @@ const createDOMElement = (tagName, props, children) => {
 }
 
 const attachEventListener = (element, propName, callback) => {
-    let eventName = propName.replace('on', '').toLowerCase()
-    element.addEventListener(eventName, callback)
+    if(recognizedEvents.includes(propName)){
+        let eventName = propName.replace('on', '').toLowerCase()
+        element.addEventListener(eventName, callback)
+    }
 }
 
 const createElement = (tagName, props, ...children) =>{
@@ -185,4 +187,83 @@ const createElement = (tagName, props, ...children) =>{
         ? createDOMElement(tagName, props, children)
         : createComponent(tagName, props, children)
 }
+
+let recognizedEvents = [
+    "onCopy",
+    "onCut",
+    "onPaste",
+    "onCompositionEnd",
+    "onCompositionStart",
+    "onCompositionUpdate",
+    "onKeyDown",
+    "onKeyPress",
+    "onKeyUp",
+    "onFocus",
+    "onBlur",
+    "onChange",
+    "onInput",
+    "onInvalid",
+    "onReset",
+    "onSubmit",
+    "onError",
+    "onLoad",
+    "onClick",
+    "onContextMenu",
+    "onDoubleClick",
+    "onDrag",
+    "onDragEnd",
+    "onDragEnter",
+    "onDragExit\nonDragLeave",
+    "onDragOver",
+    "onDragStart",
+    "onDrop",
+    "onMouseDown",
+    "onMouseEnter",
+    "onMouseLeave\nonMouseMove",
+    "onMouseOut",
+    "onMouseOver",
+    "onMouseUp",
+    "onPointerDown",
+    "onPointerMove",
+    "onPointerUp",
+    "onPointerCancel",
+    "onGotPointerCapture\nonLostPointerCapture",
+    "onPointerEnter",
+    "onPointerLeave",
+    "onPointerOver",
+    "onPointerOut",
+    "onSelect\nonTouchCancel",
+    "onTouchEnd",
+    "onTouchMove",
+    "onTouchStart",
+    "onScroll",
+    "onWheel",
+    "onAbort",
+    "onCanPlay",
+    "onCanPlayThrough",
+    "onDurationChange",
+    "onEmptied",
+    "onEncrypted\nonEnded",
+    "onError",
+    "onLoadedData",
+    "onLoadedMetadata",
+    "onLoadStart",
+    "onPause",
+    "onPlay\nonPlaying",
+    "onProgress",
+    "onRateChange",
+    "onSeeked",
+    "onSeeking",
+    "onStalled",
+    "onSuspend\nonTimeUpdate",
+    "onVolumeChange",
+    "onWaiting",
+    "onLoad",
+    "onError",
+    "onAnimationStart",
+    "onAnimationEnd",
+    "onAnimationIteration",
+    "onTransitionEnd",
+    "onToggle"
+  ]
 `
