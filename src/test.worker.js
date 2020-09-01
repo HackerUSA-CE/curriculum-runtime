@@ -176,11 +176,12 @@ const createComponent = (component, props, children) => {
 
 const createDOMElement = (tagName, props, children) => {
     const element = document.createElement(tagName)
+    element.append(...children)
     for(let propName in props) {
-        if(typeof props[propName] === 'function') attachEventListener(element, propName, props[propName])
+        if(propName === 'style') Object.assign(element.style, props[propName])
+        else if(typeof props[propName] === 'function') attachEventListener(element, propName, props[propName])
         else element[propName] = props[propName]
     }
-    element.append(...children)
     return element
 }
 
