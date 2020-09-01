@@ -26,7 +26,7 @@ let tests = {
         const { window } = new JSDOM(`<!DOCTYPE html><html><body></body></html>`);
         const { document } = window;
         const { setupScript, submissionScript, testScript, originalScript = submissionScript } = scripts
-        let resultScript = `${setupScript};\n${submissionScript};`
+        let resultScript;
         let log = []
         let mockConsole = {
             log: (...vars) => {
@@ -34,10 +34,9 @@ let tests = {
             }
         }
         try {
-
-            let completeScript = `${resultScript}\n${testScript}`
-
-            completeScript = Babel.transform(completeScript, babelConfig).code
+            resultScript = Babel.transform(`${setupScript};\n${submissionScript};`, babelConfig).code
+            let completeScript = Babel.transform(`${setupScript};\n${submissionScript};\n${testScript}`, babelConfig).code
+            
             let test = new Function('expect', 'console', 'code', 'window', 'document', 'require', 'exports', 'createModule', completeScript)
 
             test(expect, mockConsole, originalScript, window, document, require, createModule(fileName), createModule)
