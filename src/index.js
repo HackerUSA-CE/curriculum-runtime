@@ -132,8 +132,9 @@ const components = {
             let { color, message, log, dom, resultScript } = await runTest(fileName, language, { setupScript, submissionScript, testScript})
             codeExerciseTestOutput.style.color = color
             codeExerciseTestOutput.innerText = message
-            codeExerciseConsoleOutput.innerText = log.join('\n')
             if(resultScript) displayScriptOutput(resultScript)
+            else codeExerciseConsoleOutput.innerText = log.join('\n')
+
             // let newIframe = document.createElement('iframe')
             // Object.assign(newIframe.style, {
             //     borderStyle: 'none', width: '100%'
@@ -141,6 +142,20 @@ const components = {
             // newIframe.srcdoc = `<html>${dom}</html>`
             // codeExerciseDOMOutput.replaceWith(newIframe)
             // codeExerciseDOMOutput = newIframe
+        }
+
+        let mockConsole = {
+            log: (...vars) => {
+                codeExerciseConsoleOutput.innerText += `\n${vars.map(logEncode).join(', ')}`
+            }
+        }
+
+        let logEncode = variable => {
+            if(typeof variable === 'string') return `"${variable}"`
+            if(typeof variable === 'number') return variable
+            if(variable === undefined) return variable
+            if([ null, undefined ].includes(variable)) return variable.toString()
+            return JSON.stringify(variable, null, 2)
         }
 
         let displayScriptOutput = resultScript => {
@@ -155,6 +170,7 @@ const components = {
                 require,
                 exports: createModule(fileName),
                 createModule,
+                console: mockConsole
             })
             newIframe.contentDocument.write(`<body><script>${resultScript}</script></body>`)
         }
