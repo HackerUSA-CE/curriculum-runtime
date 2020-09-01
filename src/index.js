@@ -129,17 +129,34 @@ const components = {
             codeExerciseTestOutput.style.color = 'inherit'
             codeExerciseTestOutput.innerText = 'Testing...'
             codeExerciseConsoleOutput.innerText = ''
-            let { color, message, log, dom } = await runTest(fileName, language, { setupScript, submissionScript, testScript})
+            let { color, message, log, dom, resultScript } = await runTest(fileName, language, { setupScript, submissionScript, testScript})
             codeExerciseTestOutput.style.color = color
             codeExerciseTestOutput.innerText = message
             codeExerciseConsoleOutput.innerText = log.join('\n')
+            if(resultScript) displayScriptOutput(resultScript)
+            // let newIframe = document.createElement('iframe')
+            // Object.assign(newIframe.style, {
+            //     borderStyle: 'none', width: '100%'
+            // })
+            // newIframe.srcdoc = `<html>${dom}</html>`
+            // codeExerciseDOMOutput.replaceWith(newIframe)
+            // codeExerciseDOMOutput = newIframe
+        }
+
+        let displayScriptOutput = resultScript => {
             let newIframe = document.createElement('iframe')
             Object.assign(newIframe.style, {
                 borderStyle: 'none', width: '100%'
             })
-            newIframe.srcdoc = `<html>${dom}</html>`
+            newIframe.srcdoc = `<html></html>`
             codeExerciseDOMOutput.replaceWith(newIframe)
             codeExerciseDOMOutput = newIframe
+            Object.assign(newIframe.contentWindow, {
+                require,
+                exports: createModule(fileName),
+                createModule,
+            })
+            newIframe.contentDocument.write(`<body><script>${resultScript}</script></body>`)
         }
 
 
@@ -166,6 +183,18 @@ const register = () => {
             component(element)
         }
     }
+}
+
+const cache = {}
+
+const require = (module) => {
+    if(cache[module] === undefined && cache[`${module}.js`] === undefined) throw Error(`Could not find module '${module}'`)
+    return cache[module] || cache[`${module}.js`] || {}
+}
+
+const createModule = (fileName) => {
+    cache[fileName] = {__esModule: true}
+    return cache[fileName]
 }
 
 register()

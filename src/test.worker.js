@@ -26,6 +26,7 @@ let tests = {
         const { window } = new JSDOM(`<!DOCTYPE html><html><body></body></html>`);
         const { document } = window;
         const { setupScript, submissionScript, testScript, originalScript = submissionScript } = scripts
+        let resultScript = `${setupScript};\n${submissionScript};`
         let log = []
         let mockConsole = {
             log: (...vars) => {
@@ -33,7 +34,8 @@ let tests = {
             }
         }
         try {
-            let completeScript = `${setupScript};\n${submissionScript};\n${testScript}`
+
+            let completeScript = `${resultScript}\n${testScript}`
 
             completeScript = Babel.transform(completeScript, babelConfig).code
             let test = new Function('expect', 'console', 'code', 'window', 'document', 'require', 'exports', 'createModule', completeScript)
@@ -44,14 +46,16 @@ let tests = {
                 log,
                 color: 'green',
                 message: "Great Job!",
-                dom: document.body.innerHTML
+                dom: document.body.innerHTML,
+                resultScript
             }
         } catch (err) {
             return {
                 log,
                 color: 'red',
                 message: err.message,
-                dom: document.body.innerHTML
+                dom: document.body.innerHTML,
+                resultScript
             }
         }
     },
