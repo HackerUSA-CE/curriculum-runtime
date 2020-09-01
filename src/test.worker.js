@@ -166,9 +166,17 @@ const createComponent = (component, props, children) => {
 
 const createDOMElement = (tagName, props, children) => {
     const element = document.createElement(tagName)
-    for(let propName in props) element[propName] = props[propName]
+    for(let propName in props) {
+        if(typeof props[propName] === 'function') attachEventListener(element, propName, props[propName])
+        else element[propName] = props[propName]
+    }
     element.append(...children)
     return element
+}
+
+const attachEventListener = (element, propName, callback) => {
+    let eventName = propName.replace('on', '').toLowerCase()
+    element.addEventListener(eventName, callback)
 }
 
 const createElement = (tagName, props, ...children) =>{
