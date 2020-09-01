@@ -187,6 +187,7 @@ const createDOMElement = (tagName, props, children) => {
 const attachEventListener = (element, propName, callback) => {
     if(recognizedEvents.includes(propName)){
         let eventName = propName.replace('on', '').toLowerCase()
+        if(eventName === 'change') eventName = 'input'
         element.addEventListener(eventName, callback)
     }
 }
