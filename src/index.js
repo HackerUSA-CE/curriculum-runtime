@@ -134,7 +134,7 @@ const components = {
             codeExerciseTestOutput.innerText = 'Testing...'
             codeExerciseConsoleOutput.innerText = ''
             let { color, message, log, dom, resultScript, completeScript } = await runTest(fileName, language, { setupScript, submissionScript, postScript, testScript})
-            console.log(completeScript)
+            console.log(resultScript)
             codeExerciseTestOutput.style.color = color
             codeExerciseTestOutput.innerText = message
             if(resultScript) displayScriptOutput(resultScript)
