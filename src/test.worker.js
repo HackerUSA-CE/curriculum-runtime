@@ -73,7 +73,7 @@ let tests = {
     html: (fileName, scripts) => {
         let { setupScript, submissionScript, postScript, testScript, originalScript = submissionScript } = scripts
         submissionScript = `
-            document.write(\`${submissionScript}\`)
+            document.body.innerHTML = \`${submissionScript}\`
         `
         return tests.javascript(fileName, { setupScript, submissionScript, postScript, testScript, originalScript })
     },
