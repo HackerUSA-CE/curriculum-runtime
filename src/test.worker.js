@@ -60,7 +60,6 @@ let tests = {
                 message: err.message,
                 dom: document.body.innerHTML,
                 resultScript,
-                completeScript
             }
         }
     },
