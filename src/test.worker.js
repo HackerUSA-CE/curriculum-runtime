@@ -39,6 +39,8 @@ let tests = {
             
             let completeScript = Babel.transform(`${setupScript};\n${submissionScript};\n${postScript}\n${testScript}`, babelConfig).code
 
+
+
             let test = new Function('expect', 'console', 'code', 'window', 'document', 'require', 'exports', 'createModule', completeScript)
 
             test(expect, mockConsole, originalScript, window, document, require, createModule(fileName), createModule)
@@ -48,7 +50,8 @@ let tests = {
                 color: 'green',
                 message: "Great Job!",
                 dom: document.body.innerHTML,
-                resultScript
+                resultScript,
+                completeScript
             }
         } catch (err) {
             return {
@@ -56,7 +59,8 @@ let tests = {
                 color: 'red',
                 message: err.message,
                 dom: document.body.innerHTML,
-                resultScript
+                resultScript,
+                completeScript
             }
         }
     },
