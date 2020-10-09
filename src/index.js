@@ -136,9 +136,9 @@ const components = {
             let { color, message, log, dom, resultScript } = await runTest(fileName, language, { setupScript, submissionScript, postScript, testScript})
             codeExerciseTestOutput.style.color = color
             codeExerciseTestOutput.innerText = message
-            if(resultScript) displayScriptOutput(resultScript)
-            else codeExerciseConsoleOutput.innerText = log.join('\n')
-
+            displayScriptOutput(resultScript)
+            ///else codeExerciseConsoleOutput.innerText = log.join('\n')
+            console.log(...log)
             // let newIframe = document.createElement('iframe')
             // Object.assign(newIframe.style, {
             //     borderStyle: 'none', width: '100%'
