@@ -30,7 +30,7 @@ let tests = {
         let log = []
         let mockConsole = {
             log: (...vars) => {
-                log.push(vars.map(logEncode).join(', '))
+                log.push(...vars)
             },
             history: log
         }
@@ -46,7 +46,7 @@ let tests = {
             test(expect, mockConsole, originalScript, window, document, require, createModule(fileName), createModule)
 
             return {
-                log,
+                log: JSON.stringify(log),
                 color: 'green',
                 message: "Great Job!",
                 dom: document.body.innerHTML,
@@ -55,7 +55,7 @@ let tests = {
             }
         } catch (err) {
             return {
-                log,
+                log: JSON.stringify(log),
                 color: 'red',
                 message: err.message,
                 dom: document.body.innerHTML,

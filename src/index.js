@@ -138,7 +138,7 @@ const components = {
             codeExerciseTestOutput.innerText = message
             displayScriptOutput(resultScript)
             ///else codeExerciseConsoleOutput.innerText = log.join('\n')
-            console.log(log.join('\n'))
+            console.log(...JSON.parse(log))
             // let newIframe = document.createElement('iframe')
             // Object.assign(newIframe.style, {
             //     borderStyle: 'none', width: '100%'
