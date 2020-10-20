@@ -136,7 +136,7 @@ const components = {
             let { color, message, log, dom, resultScript } = await runTest(fileName, language, { setupScript, submissionScript, postScript, testScript})
             codeExerciseTestOutput.style.color = color
             codeExerciseTestOutput.innerText = message
-            displayScriptOutput(resultScript)
+            displayScriptOutput(resultScript, submissionScript)
             ///else codeExerciseConsoleOutput.innerText = log.join('\n')
             JSON.parse(log).forEach(x => console.log(x))
             // let newIframe = document.createElement('iframe')
@@ -164,7 +164,7 @@ const components = {
             return JSON.stringify(variable, null, 2)
         }
 
-        let displayScriptOutput = resultScript => {
+        let displayScriptOutput = (resultScript, code) => {
             let newIframe = document.createElement('iframe')
             Object.assign(newIframe.style, {
                 borderStyle: 'none', width: '100%'
@@ -176,7 +176,8 @@ const components = {
                 require,
                 exports: createModule(fileName),
                 createModule,
-                console: mockConsole()
+                console: mockConsole(),
+                code
             })
             newIframe.contentDocument.write(`<body><script>${resultScript}</script></body>`)
         }
