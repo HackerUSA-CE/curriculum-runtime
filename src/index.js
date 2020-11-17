@@ -9,45 +9,48 @@ import 'codemirror/theme/base16-light.css'
 
 const WEB_WORKER_URL = 'https://hackerusa-ce.github.io/curriculum-runtime/test.worker.js'
 
-let runTest;
+let testQueue = []
+let testWorker;
+let managerRunning = false
+
+let runTest = (fileName, language, scripts) => {
+    const testSpec = { language, scripts, fileName }
+    return new Promise(resolve => {
+        testQueue.push({ testSpec, resolve })
+        if (!managerRunning && testWorker != undefined) runQueueManager()
+    })
+}
+
+let runQueueManager = () => {
+    managerRunning = true
+    return new Promise(async resolve => {
+        while (testQueue.length > 0) {
+            let { testSpec, resolve } = testQueue.shift()
+            let results = await sendTest(testSpec)
+            resolve(results)
+        }
+        resolve()
+        managerRunning = false
+    })
+}
+
+let sendTest = (testSpec) => {
+    return new Promise(resolve => {
+        testWorker.postMessage(testSpec)
+        testWorker.onmessage = function ({ data: result }) {
+            resolve(result)
+        }
+    })
+}
 
 fetch(WEB_WORKER_URL)
     .then(res => res.text())
     .then(result => {
         let workerSrcBlob = new Blob([result], { type: 'text/javascript' });
         let workerBlobURL = URL.createObjectURL(workerSrcBlob);
-        let testWorker = new Worker(workerBlobURL)
-        let testQueue = []
-
-        runTest = (fileName, language, scripts) => {
-            const testSpec =  { language, scripts, fileName }
-            return new Promise(resolve => {
-                testQueue.push({ testSpec, resolve })
-                if(!managerRunning) runQueueManager()
-            })
-        }
-
-        let managerRunning = false
-        let runQueueManager = () => {
-            managerRunning = true
-            return new Promise(async resolve => {
-                while (testQueue.length > 0) {
-                    let { testSpec, resolve } = testQueue.shift()
-                    let results = await sendTest(testSpec)
-                    resolve(results)
-                }
-                resolve()
-                managerRunning = false
-            })
-        }
-
-        let sendTest = (testSpec) => {
-            return new Promise(resolve => {
-                testWorker.postMessage(testSpec)
-                testWorker.onmessage = function ({ data: result }) {
-                    resolve(result)
-                }
-            })
+        testWorker = new Worker(workerBlobURL)
+        if (!managerRunning) {
+            runQueueManager()
         }
     })
 
@@ -102,8 +105,8 @@ const components = {
 
         let { setupScript, postScript, testScript, language, showConsole, showDOM, fileName } = getMetadata(codeExerciseDiv)
 
-        if(showConsole === null) showConsole = defaultConsoleView[language]
-        if(showDOM === null) showDOM = defaultDOMView[language]
+        if (showConsole === null) showConsole = defaultConsoleView[language]
+        if (showDOM === null) showDOM = defaultDOMView[language]
 
         let codeExerciseTextArea = codeExerciseDiv.querySelector('[data-code-editor]')
         let codeExerciseTestOutput = codeExerciseDiv.querySelector('[data-test-output]')
@@ -112,8 +115,8 @@ const components = {
         let codeExerciseConsoleOutput = codeExerciseDiv.querySelector('[data-console-output]')
         let codeExerciseConsoleTray = codeExerciseDiv.querySelector('[data-console-tray]')
 
-        if(showConsole === false) codeExerciseConsoleTray.style.display = 'none'
-        if(showDOM === false) codeExerciseDOMTray.style.display = 'none'
+        if (showConsole === false) codeExerciseConsoleTray.style.display = 'none'
+        if (showDOM === false) codeExerciseDOMTray.style.display = 'none'
 
         let editor = CodeMirror.fromTextArea(codeExerciseTextArea, {
             lineNumbers: true,
@@ -133,7 +136,7 @@ const components = {
             codeExerciseTestOutput.style.color = 'inherit'
             codeExerciseTestOutput.innerText = 'Testing...'
             codeExerciseConsoleOutput.innerText = ''
-            let { color, message, log, dom, resultScript } = await runTest(fileName, language, { setupScript, submissionScript, postScript, testScript})
+            let { color, message, log, dom, resultScript } = await runTest(fileName, language, { setupScript, submissionScript, postScript, testScript })
             codeExerciseTestOutput.style.color = color
             codeExerciseTestOutput.innerText = message
             displayScriptOutput(resultScript, submissionScript)
@@ -149,7 +152,7 @@ const components = {
         }
 
         let mockConsole = () => ({
-            log: function(...vars){
+            log: function (...vars) {
                 this.history.push(vars.map(logEncode).join(', '))
                 codeExerciseConsoleOutput.innerText += `\n${vars.map(logEncode).join(', ')}`
             },
@@ -157,10 +160,10 @@ const components = {
         })
 
         let logEncode = variable => {
-            if(typeof variable === 'string') return `"${variable}"`
-            if(typeof variable === 'number') return variable
-            if(variable === undefined) return variable
-            if([ null, undefined ].includes(variable)) return variable.toString()
+            if (typeof variable === 'string') return `"${variable}"`
+            if (typeof variable === 'number') return variable
+            if (variable === undefined) return variable
+            if ([null, undefined].includes(variable)) return variable.toString()
             return JSON.stringify(variable, null, 2)
         }
 
@@ -211,12 +214,12 @@ const register = () => {
 const cache = {}
 
 const require = (module) => {
-    if(cache[module] === undefined && cache[`${module}.js`] === undefined) throw Error(`Could not find module '${module}'`)
+    if (cache[module] === undefined && cache[`${module}.js`] === undefined) throw Error(`Could not find module '${module}'`)
     return cache[module] || cache[`${module}.js`] || {}
 }
 
 const createModule = (fileName) => {
-    cache[fileName] = {__esModule: true}
+    cache[fileName] = { __esModule: true }
     return cache[fileName]
 }
 
